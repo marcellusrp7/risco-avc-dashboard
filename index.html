@@ -3,229 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Previsão de Risco de AVC</title>
+    <title>Simulador de Risco de AVC</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
         }
-        .card {
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 5px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        /* Estilo para focar nos selects e inputs */
-        input:focus, select:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
-        }
-        /* Classes customizadas para o resultado */
-        .risk-high { color: #dc2626; font-weight: 700; border-color: #dc2626; }
-        .risk-moderate { color: #f59e0b; font-weight: 700; border-color: #f59e0b; }
-        .risk-low { color: #10b981; font-weight: 700; border-color: #10b981; }
+        .risk-low { color: #10b981; font-weight: 700; } /* Tailwind green-500 */
+        .risk-moderate { color: #f59e0b; font-weight: 700; } /* Tailwind yellow-500 */
+        .risk-high { color: #ef4444; font-weight: 700; } /* Tailwind red-500 */
+        .risk-result { transition: all 0.5s ease-in-out; }
     </style>
 </head>
 <body class="p-4 md:p-8">
+    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-xl p-6 md:p-10">
 
-    <div class="max-w-4xl mx-auto">
+        <!-- Título Principal -->
         <header class="text-center mb-8">
             <h1 class="text-3xl font-bold text-gray-800">Simulador de Risco de AVC</h1>
-            <p class="text-gray-500">Avaliação baseada em fatores de saúde e estilo de vida.</p>
+            <p class="text-gray-500 mt-2">Avaliação de Fatores de Risco</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-            <!-- Painel de Input (Colunas 1 e 2) -->
-            <div class="lg:col-span-2 bg-white p-6 rounded-xl card">
-                <h2 class="text-xl font-semibold mb-6 text-gray-700">Dados do Paciente</h2>
-                
-                <form id="riskForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                    <!-- Gênero -->
-                    <div>
-                        <label for="gender" class="block text-sm font-medium text-gray-700">Gênero</label>
-                        <select id="gender" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2 transition duration-150 ease-in-out">
-                            <option value="Female">Feminino</option>
-                            <option value="Male">Masculino</option>
-                            <option value="Other">Outro</option>
-                        </select>
-                    </div>
-
-                    <!-- Idade -->
-                    <div>
-                        <label for="age" class="block text-sm font-medium text-gray-700">Idade</label>
-                        <input type="number" id="age" value="30" min="0" max="120" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2 transition duration-150 ease-in-out">
-                    </div>
-
-                    <!-- Hipertensão -->
-                    <div>
-                        <label for="hypertension" class="block text-sm font-medium text-gray-700">Hipertensão (Sim/Não)</label>
-                        <select id="hypertension" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2 transition duration-150 ease-in-out">
-                            <option value="0">Não</option>
-                            <option value="1">Sim</option>
-                        </select>
-                    </div>
-
-                    <!-- Doença Cardíaca -->
-                    <div>
-                        <label for="heart_disease" class="block text-sm font-medium text-gray-700">Doença Cardíaca (Sim/Não)</label>
-                        <select id="heart_disease" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2 transition duration-150 ease-in-out">
-                            <option value="0">Não</option>
-                            <option value="1">Sim</option>
-                        </select>
-                    </div>
-
-                    <!-- Nível de Glicose Médio -->
-                    <div>
-                        <label for="avg_glucose_level" class="block text-sm font-medium text-gray-700">Glicose Média (mg/dL)</label>
-                        <input type="number" id="avg_glucose_level" value="90" min="50" max="300" step="0.1" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2 transition duration-150 ease-in-out">
-                    </div>
-
-                    <!-- IMC -->
-                    <div>
-                        <label for="bmi" class="block text-sm font-medium text-gray-700">IMC (Índice de Massa Corporal)</label>
-                        <input type="number" id="bmi" value="25" min="10" max="60" step="0.1" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2 transition duration-150 ease-in-out">
-                    </div>
-                    
-                    <!-- Status de Fumante -->
-                    <div class="md:col-span-2">
-                        <label for="smoking_status" class="block text-sm font-medium text-gray-700">Status de Fumante</label>
-                        <select id="smoking_status" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2 transition duration-150 ease-in-out">
-                            <option value="never smoked">Nunca Fumou</option>
-                            <option value="formerly smoked">Fumava Antes</option>
-                            <option value="smokes">Fuma Atualmente</option>
-                            <option value="Unknown">Desconhecido</option>
-                        </select>
-                    </div>
-
-                    <div class="md:col-span-2 mt-4">
-                        <button type="submit" class="w-full py-3 px-4 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
-                            Calcular Risco de AVC
-                        </button>
-                    </div>
-
-                </form>
-            </div>
-
-            <!-- Painel de Resultado (Coluna 3) -->
-            <div class="lg:col-span-1 bg-white p-6 rounded-xl card h-fit sticky top-8">
-                <h2 class="text-xl font-semibold mb-6 text-gray-700">Probabilidade de Risco de AVC</h2>
-                
-                <div id="resultContainer" class="text-center p-4 border-2 border-dashed rounded-lg bg-gray-50">
-                    <p class="text-lg text-gray-500 mb-2">Preencha e Calcule</p>
-                    <p class="text-4xl font-extrabold text-gray-400" id="riskValue">0%</p>
-                    <p class="text-xl font-bold mt-3" id="riskClassification">Aguardando Dados...</p>
-                </div>
-
-                <div class="mt-6">
-                    <h3 class="font-medium text-gray-700 mb-2">Interpretação:</h3>
-                    <ul class="text-sm text-gray-600 space-y-1">
-                        <li><span class="inline-block w-2 h-2 rounded-full bg-red-600 mr-2"></span>**Alto Risco:** Requer atenção médica imediata e mudança de estilo de vida.</li>
-                        <li><span class="inline-block w-2 h-2 rounded-full bg-yellow-500 mr-2"></span>**Risco Moderado:** Necessidade de monitoramento e consultas com especialista.</li>
-                        <li><span class="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>**Baixo Risco:** Risco de linha de base. Recomenda-se manter hábitos saudáveis.</li>
-                    </ul>
-                </div>
-            </div>
-
+        <!-- NOVO: Aviso Importante (Disclaimer) com menção à OMS -->
+        <div id="disclaimer" class="p-4 mb-8 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-lg">
+            <p class="font-semibold text-sm md:text-base">AVISO IMPORTANTE:</p>
+            <p class="text-xs md:text-sm mt-1">
+                Esta é uma **simulação de risco** baseada em um sistema de pontuação ponderada. Os fatores de risco utilizados são reconhecidos pela **Organização Mundial da Saúde (OMS)**, mas esta ferramenta **NÃO** é um diagnóstico médico, não utiliza Machine Learning treinado com dados clínicos reais, e não substitui a avaliação de um profissional de saúde. **Sempre consulte um médico** para qualquer preocupação com a sua saúde.
+            </p>
         </div>
+
+        <!-- Formulário de Entrada (Mantido) -->
+        <form id="riskForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Idade -->
+            <div>
+                <label for="age" class="block text-sm font-medium text-gray-700">Idade (anos)</label>
+                <input type="number" id="age" min="0" max="120" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+
+            <!-- Hipertensão -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Hipertensão (Histórico)</label>
+                <select id="hypertension" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="0">Não</option>
+                    <option value="1">Sim</option>
+                </select>
+            </div>
+
+            <!-- Doença Cardíaca -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Doença Cardíaca (Histórico)</label>
+                <select id="heartDisease" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="0">Não</option>
+                    <option value="1">Sim</option>
+                </select>
+            </div>
+
+            <!-- Nível de Glicose Médio (mg/dL) -->
+            <div>
+                <label for="avgGlucoseLevel" class="block text-sm font-medium text-gray-700">Nível Médio de Glicose (mg/dL)</label>
+                <input type="number" id="avgGlucoseLevel" step="0.01" min="50" max="300" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+
+            <!-- BMI (IMC) -->
+            <div>
+                <label for="bmi" class="block text-sm font-medium text-gray-700">IMC (Índice de Massa Corporal)</label>
+                <input type="number" id="bmi" step="0.1" min="10" max="70" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+
+            <!-- Status de Fumo -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Status de Fumo</label>
+                <select id="smokingStatus" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="never smoked">Nunca fumou</option>
+                    <option value="formerly smoked">Fumou anteriormente</option>
+                    <option value="smokes">Fuma atualmente</option>
+                </select>
+            </div>
+            
+            <!-- Botão de Cálculo -->
+            <div class="md:col-span-2 mt-4">
+                <button type="submit" class="w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                    Calcular Risco
+                </button>
+            </div>
+        </form>
+
+        <!-- Seção de Resultado (Mantida) -->
+        <div class="mt-10">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Resultado da Simulação</h2>
+            <div id="resultContainer" class="risk-result text-center p-6 border-2 border-dashed rounded-xl transition duration-500 ease-in-out">
+                <p class="text-gray-500 text-sm">Preencha o formulário acima para ver a simulação do risco.</p>
+                <div class="mt-4 hidden" id="resultDisplay">
+                    <p class="text-4xl font-extrabold mb-2" id="riskValue">0%</p>
+                    <p class="text-lg" id="riskClassification">Resultado: N/A</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOVO: Informações sobre a Metodologia (Rodapé) com menção à OMS -->
+        <footer class="mt-12 pt-6 border-t border-gray-200 text-center text-gray-500 text-xs">
+            <h3 class="font-semibold text-sm mb-2 text-gray-700">Sobre Este Simulador</h3>
+            <p>
+                Este painel foi desenvolvido como um projeto de demonstração interativa. Os fatores de risco (idade, hipertensão, etc.) são baseados em diretrizes e dados da **Organização Mundial da Saúde (OMS)**.
+            </p>
+            <p class="mt-1">
+                A classificação de risco é calculada usando uma **fórmula de pontuação ponderada simples** (modelo linear) e não representa um modelo clínico validado ou baseado em Machine Learning (ML) complexo. É uma ferramenta para fins **puramente educacionais e demonstrativos**.
+            </p>
+        </footer>
+
     </div>
 
     <script>
-        document.getElementById('riskForm').addEventListener('submit', function(e) {
+        // Variáveis de escopo
+        const form = document.getElementById('riskForm');
+        const resultContainer = document.getElementById('resultContainer');
+        const riskValue = document.getElementById('riskValue');
+        const riskClassification = document.getElementById('riskClassification');
+        const resultDisplay = document.getElementById('resultDisplay');
+
+        // Fatores de peso para o cálculo da probabilidade (ajustados para simulação)
+        const WEIGHTS = {
+            age: 0.003, // Aumentado
+            hypertension: 0.15, // Aumentado
+            heartDisease: 0.18, // Aumentado
+            avgGlucoseLevel: 0.001,
+            bmi: 0.001,
+            smokingSmokes: 0.10, // Aumentado
+            smokingFormerly: 0.05
+        };
+
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
             calculateRisk();
         });
 
-        // Função principal para calcular o risco com lógica aprimorada
         function calculateRisk() {
-            // 1. Obter valores dos inputs
-            const age = parseFloat(document.getElementById('age').value) || 0;
-            const hypertension = parseInt(document.getElementById('hypertension').value) || 0;
-            const heart_disease = parseInt(document.getElementById('heart_disease').value) || 0;
-            const avg_glucose_level = parseFloat(document.getElementById('avg_glucose_level').value) || 0;
-            const bmi = parseFloat(document.getElementById('bmi').value) || 0;
-            const smoking_status = document.getElementById('smoking_status').value;
-            const gender = document.getElementById('gender').value;
+            // 1. Coletar e validar entradas
+            const age = parseFloat(document.getElementById('age').value);
+            const hypertension = parseInt(document.getElementById('hypertension').value);
+            const heartDisease = parseInt(document.getElementById('heartDisease').value);
+            const avgGlucoseLevel = parseFloat(document.getElementById('avgGlucoseLevel').value);
+            const bmi = parseFloat(document.getElementById('bmi').value);
+            const smokingStatus = document.getElementById('smokingStatus').value;
 
-            // 2. Definir pesos aprimorados (Ajustados para gerar classificações de risco mais realistas/sensíveis)
-            // Estes pesos são simplificados e apenas para fins de simulação/demonstração.
-            const WEIGHTS = {
-                age_factor: 0.005,      // Aumenta com a idade
-                hypertension: 0.20,
-                heart_disease: 0.25,    // Maior peso para doença cardíaca
-                glucose_factor: 0.001,  // Contribuição do nível de glicose
-                bmi_factor: 0.005,      // Contribuição do IMC
-                smoking_formerly: 0.10, // Risco maior se fumava antes
-                smoking_current: 0.15,  // Risco mais alto se fuma atualmente
-                gender_male: 0.03       // Pequena diferença para o gênero (Male)
-            };
+            // Pontuação inicial de base (Base rate)
+            let score = 0.05; 
 
-            let raw_score = 0;
-
-            // 3. Calcular a pontuação bruta (raw_score)
+            // 2. Aplicar pesos
             
-            // Fatores Contínuos
-            raw_score += age * WEIGHTS.age_factor;
-            raw_score += avg_glucose_level * WEIGHTS.glucose_factor;
-            raw_score += bmi * WEIGHTS.bmi_factor;
+            // Idade: contribuição linear
+            score += age * WEIGHTS.age;
 
-            // Fatores Binários/Categóricos
-            raw_score += hypertension * WEIGHTS.hypertension;
-            raw_score += heart_disease * WEIGHTS.heart_disease;
-
-            if (gender === 'Male') {
-                raw_score += WEIGHTS.gender_male;
+            // Hipertensão e Doença Cardíaca: contribuição direta e alta
+            score += hypertension * WEIGHTS.hypertension;
+            score += heartDisease * WEIGHTS.heartDisease;
+            
+            // Nível de Glicose: penalidade por nível alto
+            if (avgGlucoseLevel > 140) {
+                score += (avgGlucoseLevel - 140) * WEIGHTS.avgGlucoseLevel; 
+            } else if (avgGlucoseLevel > 100) {
+                score += (avgGlucoseLevel - 100) * (WEIGHTS.avgGlucoseLevel / 2);
             }
 
-            // Status de Fumante
-            if (smoking_status === 'formerly smoked') {
-                raw_score += WEIGHTS.smoking_formerly;
-            } else if (smoking_status === 'smokes') {
-                raw_score += WEIGHTS.smoking_current;
+            // BMI: penalidade por obesidade
+            if (bmi >= 30) {
+                score += (bmi - 30) * WEIGHTS.bmi;
             }
 
-            // 4. Determinar Probabilidade e Classificação
-            // Limitar a pontuação máxima para simular uma probabilidade
-            const max_score = 1.0; 
-            let probability = Math.min(raw_score, max_score);
+            // Status de Fumo
+            if (smokingStatus === 'smokes') {
+                score += WEIGHTS.smokingSmokes;
+            } else if (smokingStatus === 'formerly smoked') {
+                score += WEIGHTS.smokingFormerly;
+            }
 
-            // Escalar a probabilidade para uma porcentagem
-            let probability_percent = (probability * 100).toFixed(1);
+            // 3. Normalizar e Classificar
+            // Limitar a probabilidade máxima (e.g., a 0.50 ou 50%) para manter a simulação realista
+            const probability = Math.min(score, 0.50); 
+            const probability_percent = (probability * 100).toFixed(1);
 
             let classification = "Baixo Risco";
             let classification_class = "risk-low";
 
-            // Definir limiares de classificação
-            if (probability >= 0.45) { // Novo limiar para 'Alto Risco'
+            // Definir limiares de classificação (ajustados para a simulação)
+            if (probability >= 0.25) { // Novo limiar para 'Alto Risco'
                 classification = "Alto Risco";
                 classification_class = "risk-high";
-            } else if (probability >= 0.20) {
+            } else if (probability >= 0.10) { // Novo limiar para 'Risco Moderado'
                 classification = "Risco Moderado";
                 classification_class = "risk-moderate";
             }
-
-            // 5. Atualizar o Painel de Resultado
-            const resultContainer = document.getElementById('resultContainer');
-            const riskValue = document.getElementById('riskValue');
-            const riskClassification = document.getElementById('riskClassification');
-
+            
+            // 4. Atualizar o Painel de Resultado
+            
             // Resetar classes de cor
-            resultContainer.className = 'text-center p-4 border-2 border-dashed rounded-lg bg-gray-50';
+            resultContainer.className = 'risk-result text-center p-6 border-2 border-dashed rounded-xl transition duration-500 ease-in-out';
             riskClassification.className = '';
 
             // Aplicar novas classes e valores
             resultContainer.classList.add(`border-${classification_class.split('-')[1]}-400`);
+            resultContainer.classList.add(`bg-${classification_class.split('-')[1]}-50`);
             riskValue.textContent = `${probability_percent}%`;
             riskClassification.textContent = `Resultado: ${classification}`;
             riskClassification.classList.add(classification_class);
-            riskClassification.classList.add('text-xl', 'font-bold', 'mt-3');
+            
+            resultDisplay.classList.remove('hidden');
+
+            // 5. Scroll para o resultado (melhora a experiência em mobile)
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-
-        // Garante que o cálculo inicial seja executado na primeira vez que a página carrega
-        window.onload = function() {
-            calculateRisk();
-        };
-
     </script>
 </body>
 </html>
