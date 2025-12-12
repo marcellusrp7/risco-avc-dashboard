@@ -1,4 +1,4 @@
-# 🧠 Projeto de Previsão de Risco de AVC (Stroke Prediction)
+# 🧠 Projeto de Previsão de Risco de AVC
 
 Este repositório contém um projeto "End-to-End" de Ciência de Dados focado na área da saúde. O objetivo foi substituir um sistema de pontuação manual impreciso por um modelo de Machine Learning robusto capaz de prever a probabilidade de um paciente sofrer um AVC (Acidente Vascular Cerebral).
 
