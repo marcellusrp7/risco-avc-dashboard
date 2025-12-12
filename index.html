@@ -1,44 +1,36 @@
+<script>
 function calcularRiscoAVC() {
     // 1. CAPTURAR OS DADOS DO FORMULÁRIO HTML
-    // (Certifique-se que os IDs 'age', 'bmi', etc. batem com o seu HTML)
     var age = parseFloat(document.getElementById('age').value);
     var avg_glucose_level = parseFloat(document.getElementById('glucose').value);
     var bmi = parseFloat(document.getElementById('bmi').value);
     
-    // Checkboxes (true/false convertidos para 1/0)
+    // Checkboxes
     var hypertension = document.getElementById('hypertension').checked ? 1 : 0;
     var heart_disease = document.getElementById('heart_disease').checked ? 1 : 0;
     
-    // Selects (Dropdowns)
+    // Selects
     var smoking_status = document.getElementById('smoking_status').value; 
-    // Esperado: 'formerly smoked', 'never smoked', 'smokes', 'Unknown'
 
-    // --- 2. COEFICIENTES DO MODELO R (Regressão Logística) ---
-    // Estes números vieram do seu summary(classifier)
+    // --- 2. COEFICIENTES DO MODELO R ---
     var intercept = -6.998;
-    
     var b_age = 0.07721;
     var b_hypertension = 0.5791;
     var b_heart_disease = 0.3002;
     var b_glucose = 0.004723;
     var b_bmi = 0.01608;
     
-    // Coeficientes para Fumo (Comparado com "Unknown" que é a base no R)
-    // Se o seu select usa valores diferentes, ajuste aqui.
-    var b_smoke_formerly = 0; // Valor estatístico baixo/nulo no seu modelo
+    // Coeficientes Fumo
     var b_smoke_never = -0.0419; 
     var b_smoke_smokes = 0.208; 
 
-    // --- 3. CAMPOS OCULTOS (Assumindo média) ---
-    // Como seu dashboard atual não pergunta Gênero ou Trabalho, 
-    // vamos fixar valores "padrão" para não quebrar a conta matemática.
-    // (Futuramente, adicione essas perguntas no HTML para ficar 100% preciso)
-    var b_gender_male = 0.075; // Assumindo masculino
-    var b_married_yes = -0.093; // Assumindo casado
-    var b_urban = -0.008;       // Assumindo urbano
-    var b_work_private = -1.48; // Assumindo setor privado (o mais comum)
+    // --- 3. CAMPOS OCULTOS (Médias fixas) ---
+    var b_gender_male = 0.075; 
+    var b_married_yes = -0.093; 
+    var b_urban = -0.008;       
+    var b_work_private = -1.48; 
 
-    // --- 4. CÁLCULO DA SOMA PONDERADA (Log-Odds) ---
+    // --- 4. CÁLCULO (Log-Odds) ---
     var log_odds = intercept 
                  + (age * b_age)
                  + (hypertension * b_hypertension)
@@ -50,24 +42,20 @@ function calcularRiscoAVC() {
                  + b_urban
                  + b_work_private;
 
-    // Adicionar peso do fumo
     if (smoking_status === 'smokes') {
         log_odds += b_smoke_smokes;
     } else if (smoking_status === 'never smoked') {
         log_odds += b_smoke_never;
     } 
-    // se for 'formerly' ou 'unknown', não soma nada (ou soma o valor específico se tiver)
 
-    // --- 5. FÓRMULA SIGMOIDE (Converte em %) ---
-    // Transforma a soma estranha em uma probabilidade entre 0 e 100
+    // --- 5. RESULTADO ---
     var probabilidade = 1 / (1 + Math.exp(-log_odds));
     var porcentagem = (probabilidade * 100).toFixed(2);
 
-    // --- 6. EXIBIR RESULTADO ---
+    // --- 6. EXIBIR ---
     var resultadoTexto = porcentagem + "%";
     var classificacao = "";
 
-    // Definir faixas de risco (baseado na realidade médica)
     if (probabilidade < 0.05) {
         classificacao = "Risco Baixo (Normal)";
         document.getElementById('result').style.color = "green";
@@ -79,6 +67,8 @@ function calcularRiscoAVC() {
         document.getElementById('result').style.color = "red";
     }
 
-    // Jogar na tela (ajuste o ID 'result' conforme seu HTML)
     document.getElementById('result').innerHTML = "<strong>" + resultadoTexto + "</strong><br>" + classificacao;
 }
+</script>
+</body>
+</html>
