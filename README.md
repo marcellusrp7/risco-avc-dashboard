@@ -53,7 +53,7 @@ Desenvolvi um modelo de **Regressão Logística** que analisa o contexto clínic
 ### 👤 Autor
 
 **Marcellus**
-* [LinkedIn](https://www.linkedin.com/in/seu-perfil/) *(Insira seu link aqui)*
+* [LinkedIn](https://www.linkedin.com/in/marcellusrp/)
 * [Portfólio GitHub](https://github.com/marcellusrp7)
 
 ---
