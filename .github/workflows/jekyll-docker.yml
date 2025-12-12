@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Risco de AVC</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input, select { width: 100%; padding: 8px; margin-top: 5px; }
+        button { width: 100%; padding: 15px; background-color: #007bff; color: white; border: none; font-size: 16px; margin-top: 20px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        #result { margin-top: 20px; font-size: 1.2em; text-align: center; padding: 10px; border: 1px solid #ccc; background-color: #f9f9f9; }
+        .checkbox-group { display: flex; align-items: center; margin-top: 10px; }
+        .checkbox-group input { width: auto; margin-right: 10px; }
+    </style>
+</head>
+<body>
+
+    <h1>Simulador de Risco de AVC</h1>
+    <p>Preencha os dados abaixo para calcular a probabilidade baseada no modelo de IA.</p>
+
+    <label>Idade:</label>
+    <input type="number" id="age" placeholder="Ex: 46">
+
+    <label>Nível Médio de Glicose (mg/dL):</label>
+    <input type="number" id="glucose" placeholder="Ex: 95">
+
+    <label>IMC (Índice de Massa Corporal):</label>
+    <input type="number" id="bmi" placeholder="Ex: 25.0">
+
+    <div class="checkbox-group">
+        <input type="checkbox" id="hypertension">
+        <label for="hypertension" style="margin:0">Tenho Hipertensão</label>
+    </div>
+
+    <div class="checkbox-group">
+        <input type="checkbox" id="heart_disease">
+        <label for="heart_disease" style="margin:0">Tenho Doença Cardíaca</label>
+    </div>
+
+    <label>Status de Fumo:</label>
+    <select id="smoking_status">
+        <option value="never smoked">Nunca fumou</option>
+        <option value="formerly smoked">Ex-fumante</option>
+        <option value="smokes">Fumante atual</option>
+        <option value="Unknown">Desconhecido</option>
+    </select>
+
+    <button type="button" onclick="calcularRiscoAVC()">Calcular Risco</button>
+
+    <div id="result">O resultado aparecerá aqui...</div>
+
+    <script>
+    function calcularRiscoAVC() {
+        // Capturar valores
+        var age = parseFloat(document.getElementById('age').value);
+        var avg_glucose_level = parseFloat(document.getElementById('glucose').value);
+        var bmi = parseFloat(document.getElementById('bmi').value);
+        
+        var hypertension = document.getElementById('hypertension').checked ? 1 : 0;
+        var heart_disease = document.getElementById('heart_disease').checked ? 1 : 0;
+        var smoking_status = document.getElementById('smoking_status').value; 
+
+        // Validação simples para evitar erro se estiver vazio
+        if (isNaN(age) || isNaN(avg_glucose_level) || isNaN(bmi)) {
+            document.getElementById('result').innerHTML = "Por favor, preencha todos os campos numéricos.";
+            document.getElementById('result').style.color = "red";
+            return;
+        }
+
+        // Coeficientes do Modelo R
+        var intercept = -6.998;
+        var b_age = 0.07721;
+        var b_hypertension = 0.5791;
+        var b_heart_disease = 0.3002;
+        var b_glucose = 0.004723;
+        var b_bmi = 0.01608;
+        
+        var b_smoke_never = -0.0419; 
+        var b_smoke_smokes = 0.208; 
+
+        var b_gender_male = 0.075; 
+        var b_married_yes = -0.093; 
+        var b_urban = -0.008;       
+        var b_work_private = -1.48; 
+
+        // Cálculo
+        var log_odds = intercept 
+                     + (age * b_age)
+                     + (hypertension * b_hypertension)
+                     + (heart_disease * b_heart_disease)
+                     + (avg_glucose_level * b_glucose)
+                     + (bmi * b_bmi)
+                     + b_gender_male 
+                     + b_married_yes
+                     + b_urban
+                     + b_work_private;
+
+        if (smoking_status === 'smokes') {
+            log_odds += b_smoke_smokes;
+        } else if (smoking_status === 'never smoked') {
+            log_odds += b_smoke_never;
+        } 
+
+        // Resultado
+        var probabilidade = 1 / (1 + Math.exp(-log_odds));
+        var porcentagem = (probabilidade * 100).toFixed(2);
+
+        var resultadoTexto = porcentagem + "%";
+        var classificacao = "";
+        var cor = "";
+
+        if (probabilidade < 0.05) {
+            classificacao = "Risco Baixo (Normal)";
+            cor = "green";
+        } else if (probabilidade < 0.15) {
+            classificacao = "Risco Elevado";
+            cor = "orange";
+        } else {
+            classificacao = "Risco Alto - Procure um médico";
+            cor = "red";
+        }
+
+        var divResult = document.getElementById('result');
+        divResult.style.color = cor;
+        divResult.innerHTML = "<strong>Probabilidade: " + resultadoTexto + "</strong><br>" + classificacao;
+    }
+    </script>
+
+</body>
+</html>
