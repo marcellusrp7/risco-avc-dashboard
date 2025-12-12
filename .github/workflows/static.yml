@@ -1,84 +1,34 @@
-function calcularRiscoAVC() {
-    // 1. CAPTURAR OS DADOS DO FORMULÁRIO HTML
-    // (Certifique-se que os IDs 'age', 'bmi', etc. batem com o seu HTML)
-    var age = parseFloat(document.getElementById('age').value);
-    var avg_glucose_level = parseFloat(document.getElementById('glucose').value);
-    var bmi = parseFloat(document.getElementById('bmi').value);
-    
-    // Checkboxes (true/false convertidos para 1/0)
-    var hypertension = document.getElementById('hypertension').checked ? 1 : 0;
-    var heart_disease = document.getElementById('heart_disease').checked ? 1 : 0;
-    
-    // Selects (Dropdowns)
-    var smoking_status = document.getElementById('smoking_status').value; 
-    // Esperado: 'formerly smoked', 'never smoked', 'smokes', 'Unknown'
+name: Deploy static content to Pages
 
-    // --- 2. COEFICIENTES DO MODELO R (Regressão Logística) ---
-    // Estes números vieram do seu summary(classifier)
-    var intercept = -6.998;
-    
-    var b_age = 0.07721;
-    var b_hypertension = 0.5791;
-    var b_heart_disease = 0.3002;
-    var b_glucose = 0.004723;
-    var b_bmi = 0.01608;
-    
-    // Coeficientes para Fumo (Comparado com "Unknown" que é a base no R)
-    // Se o seu select usa valores diferentes, ajuste aqui.
-    var b_smoke_formerly = 0; // Valor estatístico baixo/nulo no seu modelo
-    var b_smoke_never = -0.0419; 
-    var b_smoke_smokes = 0.208; 
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
 
-    // --- 3. CAMPOS OCULTOS (Assumindo média) ---
-    // Como seu dashboard atual não pergunta Gênero ou Trabalho, 
-    // vamos fixar valores "padrão" para não quebrar a conta matemática.
-    // (Futuramente, adicione essas perguntas no HTML para ficar 100% preciso)
-    var b_gender_male = 0.075; // Assumindo masculino
-    var b_married_yes = -0.093; // Assumindo casado
-    var b_urban = -0.008;       // Assumindo urbano
-    var b_work_private = -1.48; // Assumindo setor privado (o mais comum)
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
-    // --- 4. CÁLCULO DA SOMA PONDERADA (Log-Odds) ---
-    var log_odds = intercept 
-                 + (age * b_age)
-                 + (hypertension * b_hypertension)
-                 + (heart_disease * b_heart_disease)
-                 + (avg_glucose_level * b_glucose)
-                 + (bmi * b_bmi)
-                 + b_gender_male 
-                 + b_married_yes
-                 + b_urban
-                 + b_work_private;
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
-    // Adicionar peso do fumo
-    if (smoking_status === 'smokes') {
-        log_odds += b_smoke_smokes;
-    } else if (smoking_status === 'never smoked') {
-        log_odds += b_smoke_never;
-    } 
-    // se for 'formerly' ou 'unknown', não soma nada (ou soma o valor específico se tiver)
-
-    // --- 5. FÓRMULA SIGMOIDE (Converte em %) ---
-    // Transforma a soma estranha em uma probabilidade entre 0 e 100
-    var probabilidade = 1 / (1 + Math.exp(-log_odds));
-    var porcentagem = (probabilidade * 100).toFixed(2);
-
-    // --- 6. EXIBIR RESULTADO ---
-    var resultadoTexto = porcentagem + "%";
-    var classificacao = "";
-
-    // Definir faixas de risco (baseado na realidade médica)
-    if (probabilidade < 0.05) {
-        classificacao = "Risco Baixo (Normal)";
-        document.getElementById('result').style.color = "green";
-    } else if (probabilidade < 0.15) {
-        classificacao = "Risco Elevado";
-        document.getElementById('result').style.color = "orange";
-    } else {
-        classificacao = "Risco Alto - Procure um médico";
-        document.getElementById('result').style.color = "red";
-    }
-
-    // Jogar na tela (ajuste o ID 'result' conforme seu HTML)
-    document.getElementById('result').innerHTML = "<strong>" + resultadoTexto + "</strong><br>" + classificacao;
-}
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
